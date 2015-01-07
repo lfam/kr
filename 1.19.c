@@ -27,8 +27,9 @@ main()
 	size_t buf_len = 0;
 
 	len = getline(&line, &buf_len, stdin);
-	fputs(line, stdout);
 
+	fputs(line, stdout);
 	reverse(line, len);
+
 	return(0);
 }
