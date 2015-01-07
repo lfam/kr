@@ -1,35 +1,54 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void reverse(char *, ssize_t);
+#define MAXLINE 1000
+
+void reverse(char [], int);
+int getline(char [], int);
+
+int
+getline(char s[], int max) {
+	int i, c;
+	for (i=0; i<max-1 && (c=getchar())!=EOF && c!='\n'; ++i) {
+		s[i] = c;
+	}
+	if (c == '\n') {
+		s[i] = c;
+		i++;
+	}
+	s[i] = '\0';
+	return i;
+}
 
 void
-reverse(char *line, ssize_t len)
+reverse(char line[], int len)
 {
 	int i = 0;
-	int j = len - 2;
-	char *rline = NULL;
-	rline = malloc(len);
+	int j = len - 1;
 
-	while (i < len - 1) {
-		rline[i] = line[j];
+	while (i <= len - 1) {
+		putchar(line[j]);
 		i++;
 		j--;
 	}
-	puts(rline);
+	putchar('\n');
 }
 
 int
 main()
 {
-	char *line = NULL;
-	ssize_t len = 0;
-	size_t buf_len = 0;
+	char line[MAXLINE];
+	int len;
 
-	len = getline(&line, &buf_len, stdin);
+	while ((len = getline(line, MAXLINE)) > 0) {
+		fputs(line, stdout);
 
-	fputs(line, stdout);
-	reverse(line, len);
-
+		if (line[len - 1] != '\n') {
+			putchar('\n');
+		} else {
+			len--;
+		}
+		reverse(line, len);
+	}
 	return(0);
 }
