@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 /*
  * This is a program to remove comments from C programs. It will handle both
  * c89 and c99 style comments.
@@ -23,8 +25,6 @@
  * the program work correctly?
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 
 #define IN 1
 #define OUT 0
@@ -50,33 +50,96 @@ main()
 	int constant = 0;
 	int comment89 = 0;
 	int comment99 = 0;
+	int i = 0;
 
 	int c;
+// Let's try only calling getchar() here...
 	while ((c = getchar()) != EOF) {
-/*
+		i++;
+//		fprintf(stdout, "%d\n", i);
+
+		if (i == 2476 || i == 2477 || i == 2478) {
+			fprintf(stderr, "i = %d\n", i);
+			fprintf(stderr, "%d quote\n", quote);
+			fprintf(stderr, "%d constant\n", constant);
+			fprintf(stderr, "%d comment89\n", comment89);
+			fprintf(stderr, "%d comment99\n", comment99);
+			fprintf(stderr, "\n");
+		}
+		if (quote) {
+			putchar(c);
+			if (c == '"') quote = OUT;
+			continue;
+		}
+		if (constant) {
+			putchar(c);
+			if (c == 39) constant = OUT;
+			continue;
+		}
+		if (comment89) {
+			if (c == '*') {
+				if ((c = getchar()) == '/') {
+					comment89 = OUT;
+				}
+			}
+			continue;
+		}
+		if (comment99) {
+			if (c == '\n') comment99 = OUT;
+			continue;
+		}
+
+		if (c == '\\') {
+			putchar(c);
+			c = getchar();
+			putchar(c);
+			continue;
+		} else if (c == '/') {
+			int buf = c;
+			c = getchar();
+			if (c == '*') {
+				comment89 = IN;
+			} else if (c == '/') {
+				comment99 = IN;
+			} else {
+				putchar(buf);
+				putchar(c);
+			}
+			continue;
+		} else if (c == '"') {
+			quote = IN;
+			putchar(c);
+			continue;
+		} else if (c == 39) {
+			constant = IN;
+			putchar(c);
+			continue;
+		}
+		putchar(c);
+/*y
 		if quote
 			echo
 			if c == \"
 				quote = OUT
-		continue
+			continue
 
 		if constant
 			echo
 			if c == \'
 				constant = OUT
-		continue		
+			continue		
 
 		if comment89
 			if c == *
 				getchar
 				if c == /
 					comment89 = OUT
-		continue
+			continue
 
 		if comment99
 			if c == \n
 				comment99 = OUT
-		continue
+			continue
 
 	Done with state checking, into normal mode 
 		if c == \\
