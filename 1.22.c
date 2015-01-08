@@ -20,19 +20,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-void break_word(char *, int, int);
+int break_word(char *, int, int);
 
-void
-break_word(char *word, int i, int max)
+int
+break_word(char *word, int w, int max)
 {
 	int j;
-	for (j = 0; j <= i; j++) {
+	for (j = 0; j <= w; j++) {
 		if ((! (j % max)) && (j != 0)) {
 			putchar(10);
 		}
 		putchar(word[j]);
 		fflush(stdout);
 	}
+	return(w % max);
 }
 
 int
@@ -41,15 +42,14 @@ main()
 	int c;
 	char word[1024] = {0};
 	int w = 0;
-	int max = 10;
+	int max = 6;
 	int rem = max;
 
-	fprintf(stdout, "0123456789ab\n");
+	fprintf(stdout, "012345\n");
 
 	while ((c = getchar()) != EOF) {
 		word[w] = c;
 		w++;
-		rem--;
 
 		fprintf(stderr, "\n-->%d\t", w);
 		fprintf(stderr, "%d-->", rem);
@@ -57,33 +57,26 @@ main()
 		if (c != ' ' && c != '\n' && c != '\t') {
 			continue;
 		}
-
 		if (w > max) {
-			break_word(word, w, max);
+			fprintf(stderr, "MAX\n");
+			rem = break_word(word, w, max);
 			w = 0;
-			rem = max;
 			memset(word, 0, sizeof(word));
 			continue;
 		}
 
-		if (rem >= 0) {
-			fputs(word, stdout);
+		if (w > rem) {
+			fprintf(stderr, "NO REM");
+			putchar('\n');
 			fflush(stdout);
-			fprintf(stderr, "\n-->%d\t", w);
-			fprintf(stderr, "%d-->", rem);
-			memset(word, 0, sizeof(word));
-			w = 0;
-		} else {
-			putchar(10);
-			rem = rem + max;
-			fputs(word, stdout);
-			fflush(stdout);
-			fprintf(stderr, "\n-->%d\t", w);
-			fprintf(stderr, "%d-->", rem);
-			memset(word, 0, sizeof(word));
-			w = 0;
+			rem = max;
 		}
-
+		fputs(word, stdout);
+		fflush(stdout);
+		c != '\n' ? (rem = rem - w) : (rem = max);
+		while (--w > 0) {
+			word[w] = '\0';
+		}
 	}
 	return(0);
 }
