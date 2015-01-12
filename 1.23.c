@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 /*
  * This is a program to remove comments from C programs. It will handle both
  * c89 and c99 style comments.
@@ -24,17 +22,10 @@
  * The question is, how do we put these requirements together in order to make
  * the program work correctly?
  */
-
+#include <stdio.h>
 
 #define IN 1
 #define OUT 0
-
-void die(int);
-void
-die(int status)
-{
-	exit(status);
-}
 
 int
 main()
@@ -46,26 +37,14 @@ main()
 	 * we cannot be in a constant or comment, and the same for the other
 	 * three states.
 	 */
-	int quote = 0;
-	int constant = 0;
-	int comment89 = 0;
-	int comment99 = 0;
-	int i = 0;
+	int quote = OUT;
+	int constant = OUT;
+	int comment89 = OUT;
+	int comment99 = OUT;
 
 	int c;
 // Let's try only calling getchar() here...
 	while ((c = getchar()) != EOF) {
-		i++;
-//		fprintf(stdout, "%d\n", i);
-
-		if (i == 2476 || i == 2477 || i == 2478) {
-			fprintf(stderr, "i = %d\n", i);
-			fprintf(stderr, "%d quote\n", quote);
-			fprintf(stderr, "%d constant\n", constant);
-			fprintf(stderr, "%d comment89\n", comment89);
-			fprintf(stderr, "%d comment99\n", comment99);
-			fprintf(stderr, "\n");
-		}
 		if (quote) {
 			putchar(c);
 			if (c == '"') quote = OUT;
@@ -89,12 +68,14 @@ main()
 			continue;
 		}
 
-		if (c == '\\') {
+		switch (c) {
+		case '\\':
 			putchar(c);
 			c = getchar();
 			putchar(c);
 			continue;
-		} else if (c == '/') {
+		case '/':
+			;
 			int buf = c;
 			c = getchar();
 			if (c == '*') {
@@ -106,14 +87,15 @@ main()
 				putchar(c);
 			}
 			continue;
-		} else if (c == '"') {
+		case '"':
 			quote = IN;
 			putchar(c);
 			continue;
-		} else if (c == 39) {
+		case 39:
 			constant = IN;
 			putchar(c);
 			continue;
+		default: break;
 		}
 		putchar(c);
 /*y
