@@ -1,6 +1,6 @@
 debug=1
 GCC_FLAGS = -Wall -std=c89 -DDEBUG -g3
-CLANG_FLAGS = -std=c89 -DDEBUG -g -O0
+CLANG_FLAGS = -Wall -std=c89 -DDEBUG -g -O0
 ifeq ($(debug), 0)
 	GCC_FLAGS = -Wall -Wextra -DNDEBUG 
 	CLANG_FLAGS = -Weverything -DNDEBUG
