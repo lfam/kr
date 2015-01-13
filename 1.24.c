@@ -6,7 +6,6 @@
  * escape sequences
  *
  * TODO:
- * Don't use continue wantonly in input loop
  * unbalanced parentheses
  * unbalanced brackets
  * unbalanced braces
@@ -231,8 +230,7 @@ main()
 		c = putchar('\n');
 		err = TRUNCATION;
 		goto out;
-	}
-	if (brace != 0) {
+	} else if (brace != 0) {
 		err = UNBALANCED_BRACES;
 		goto out;
 	} else if (bracket != 0) {
@@ -257,7 +255,7 @@ out:
 		 * Line number doesn't work... at least you know the
 		 * error took place before the reported line.
 		 */
-		fprintf(stderr, "error on line %d\n", lines);
+		fprintf(stderr, "error before or on line %d\n", lines);
 		fprintf(stderr, "string: %d\n", string);
 		fprintf(stderr, "character literal: %d\n", char_literal);
 		fprintf(stderr, "c89 comment: %d\n", comment89);
