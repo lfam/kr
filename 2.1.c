@@ -136,6 +136,7 @@ naive_unsigned_char()
 
 int
 main() {
+/*
 	printf("computed values\n");
 	printf("---------------\n");
 	putchar('\n');
@@ -148,14 +149,54 @@ main() {
 	naive_unsigned_char();
 	putchar('\n');
 
-	printf("unsigned int:\n");
-	/* SLOW!!!!!
-	naive_unsigned_int();
-	*/
-	putchar('\n');
-
 	printf("from header\n");
 	printf("-----------\n");
  	header();
+*/
+	unsigned char c;
+	unsigned short s;
+	unsigned int i;
+	unsigned long l;
+
+	c = ~0;
+	c >>= 1;
+	printf("signed char:   %4d,           %4d\n",-c - 1, c);
+	printf("SCHAR_MIN:     %4d, SCHAR_MAX %4d\n", SCHAR_MIN, SCHAR_MAX);
+	printf("unsigned char: %4u,           %4u\n", 0, c * 2 + 1);
+	printf("UCHAR_MAX:                     %4u\n", UCHAR_MAX);
+	putchar('\n');
+
+	s = ~0;
+	s >>= 1;
+	printf("signed short:   %6d,			%6d\n",-s - 1, s);
+	printf("SHRT_MIN:	%6d, SHRT_MAX	%6d\n", SHRT_MIN, SHRT_MAX);
+	printf("unsigned short:	%6u,			%6u\n", 0, s * 2 + 1);
+	printf("USHRT_MAX:				%6u\n", USHRT_MAX);
+	putchar('\n');
+
+	i = ~0;
+	i >>= 1;
+	printf("signed integer:	%11d,		%11d\n",-i - 1, i);
+	printf("INT_MIN:	%11d, INT_MAX	%11d\n", INT_MIN, INT_MAX);
+	printf("unsigned int:	%11u,		%11u\n", 0, i * 2 + 1);
+	printf("UINT_MAX:				%11u\n", UINT_MAX);
+	putchar('\n');
+
+	l = ~0;
+	l >>= 1;
+	printf("signed long:	%11ld,           %11ld\n",-l - 1, l);
+	printf("LONG_MIN:	%11ld, LONG_MAX	%11ld\n", LONG_MIN, LONG_MAX);
+	printf("unsigned long:	%11u,           %11lu\n", 0, l * 2 + 1);
+	printf("ULONG_MAX:                     %11lu\n", ULONG_MAX);
+
 	return 0;
 }
+/*
+	c = ~0;
+	c >>= 1;
+	printf("signed char:   %4d,           %4d\n",-c-1,c);
+	printf("SCHAR_MIN:     %4d, SCHAR_MAX %4d\n",SCHAR_MIN,SCHAR_MAX);
+	printf("unsigned char: %4u,           %4u\n",0,c*2+1);
+	printf("UCHAR_MAX:                     %4u\n",UCHAR_MAX);
+	putchar('\n');
+*/
