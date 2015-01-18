@@ -56,7 +56,8 @@ my_exp(int base, int exp)
 	return value;
 }
 
-/** 
+/* 
+ * http://stackoverflow.com/questions/10324/how-can-i-convert-a-hexadecimal-number-to-base-10-efficiently-in-c
  * @brief convert a hexidecimal string to a signed long
  * will not produce or process negative numbers except 
  * to signal error.
@@ -120,16 +121,16 @@ main()
 	if (! hex_validator(s, i)) {
 		fprintf(stderr, "not valid hex!\n");
 		exit_status = 1;
-		goto exit;
+		goto out;
 	} 
 */
 	long int result = htoi(s);
 	if (result < 0) {
 		exit_status = 1;
-		goto exit;
+		goto out;
 	}
 	printf("%ld\n", result);
 
-exit:
+out:
 	return exit_status;
 }
