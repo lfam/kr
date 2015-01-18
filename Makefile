@@ -27,4 +27,4 @@ all:
 	$(CC) -o $(ex).o $(ex).c
 
 clean:
-	rm -f *.o
+	rm -f *.o a.out
