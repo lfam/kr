@@ -93,7 +93,7 @@ static const long hextable[] =  {
 };
 
 long long int htoi(unsigned const char *hex) {
-	long ret = 0; 
+	long long ret = 0;
 	while (*hex && ret >= 0) {
 		ret = (ret << 4) | hextable[*hex++];
 	}
@@ -124,12 +124,12 @@ main()
 		goto out;
 	} 
 */
-	long int result = htoi(s);
+	long long int result = htoi(s);
 	if (result < 0) {
 		exit_status = 1;
 		goto out;
 	}
-	printf("%ld\n", result);
+	printf("%lld\n", result);
 
 out:
 	return exit_status;
