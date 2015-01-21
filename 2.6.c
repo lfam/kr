@@ -29,7 +29,7 @@ setbits(unsigned char x, int p, int n, unsigned char y)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
 	printf("76543210 legend\n");
 
