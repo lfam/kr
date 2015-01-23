@@ -23,17 +23,16 @@
 int butcher(char *, int, int);
 
 int
-butcher(char *word, int w, int max)
+butcher(char *word, int len, int max)
 {
-	int j;
-	int i = 0;
-	for (j = 0; j < w; j++) {
+	int i, j;
+	i = j = 0;
+	for (; j < len; i++, j++) {
 		if ((! (j % max)) && (j != 0)) {
-			putchar(10);
+			putchar('\n');
 			i = 0;
 		}
 		putchar(word[j]);
-		i++;
 	}
 	return(max - i);
 }
@@ -44,12 +43,11 @@ main()
 	int c;
 	char word[1024] = {0};
 	int w = 0;
-	int max = 16;
+	int max = 5;
 	int rem = max;
 
 	while ((c = getchar()) != EOF) {
-		word[w] = c;
-		c != '\n' && w++;
+		if ((word[w] = c) != '\n') w++;
 
 		if (c != ' ' && c != '\n' && c != '\t') {
 			continue;
@@ -76,7 +74,7 @@ main()
 		}
 	}
 	/* this conditional handles inputs that don't end in \n */
-	if (w != 0) {
+	if (w) {
 		fputs(word, stdout);
 	}
 	return(0);
