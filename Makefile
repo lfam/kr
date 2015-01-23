@@ -6,12 +6,14 @@ ifeq ($(debug), 0)
 	CLANG_FLAGS = -Weverything -DNDEBUG
 endif
 
-GCC = gcc $(GCC_FLAGS)
-CLANG = clang $(CLANG_FLAGS)
+GCC = gcc
+CLANG = clang
 
 COMPILER = $(GCC)
+CFLAGS = $(GCC_FLAGS)
 ifeq ($(compiler), clang)
 	COMPILER = $(CLANG)
+	CFLAGS = $(CLANG_FLAGS)
 endif
 
 CC = $(COMPILER)
@@ -24,7 +26,7 @@ endif
 .PHONY: clean
 
 all:
-	$(CC) -o $(ex).o $(ex).c
+	$(CC) $(CFLAGS) -o $(ex).o $(ex).c
 
 clean:
 	rm -f *.o a.out
