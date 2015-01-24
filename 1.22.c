@@ -9,15 +9,9 @@
  * get length of each word if we encounter it
  * if word length is greater than remaining length, print newline
  * print word
- *
- * OBSOLETE: read next char into buffer until ' ', \n, \t, EOF, or \0 and record length
- * decrement from max line length for each character read
- * if remaining is less than word, insert newline, else print word
- * if word length is greater than max, split word every max characters
  */
  
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 int butcher(char *, int, int);
@@ -61,13 +55,14 @@ reset(char *word, unsigned int len)
 }
 
 int
-main()
+main(void)
 {
 	int c;
 	char word[1024] = {0};
 	unsigned int w = 0;
-	int max = 10;
+	int max = 72;
 	int rem = max;
+
 
 	while ((c = getchar()) != EOF) {
 		/* this could go at end of block in an else but it's nicer up here */
