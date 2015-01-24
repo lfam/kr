@@ -21,6 +21,7 @@
 #include <string.h>
 
 int butcher(char *, int, int);
+int reset(char *, unsigned int);
 /*
  * This is for words that are longer than the max line length. We fill out the
  * remaining space on the line, and then print the rest of the word, inserting
@@ -49,46 +50,54 @@ butcher(char *word, int rem, int max)
 	return(rem + 1);
 }
 
+/* basically memset to null, return index into char array */
+int
+reset(char *word, unsigned int len)
+{
+	while (len > 0) {
+		word[--len] = '\0';
+	}
+	return len;
+}
+
 int
 main()
 {
 	int c;
 	char word[1024] = {0};
 	unsigned int w = 0;
-	int max = 5;
+	int max = 10;
 	int rem = max;
 
 	while ((c = getchar()) != EOF) {
-		if ((word[w] = c) != '\n') {
-			w++;
-		}
+		/* this could go at end of block in an else but it's nicer up here */
+		((word[w] = c) == '\n') || w++;
 
-		if (c != ' ' && c != '\n' && c != '\t') {
-			continue;
-		}
-		if (w > max) {
-			rem = butcher(word, w, max);
-			while (w > 0) {
-				word[--w] = '\0';
-			}
-		} 
-		else {
-			if (w > rem) {
-				putchar('\n');
-				rem = max;
-			}
-			fputs(word, stdout);
-			if (c == '\n') {
-				rem = max;
+		/* read until word is over... */
+		if (c == ' ' || c == '\n' || c == '\t') {
+			/* if word is longer than max line, cut it up */
+			if (w > max) {
+				rem = butcher(word, rem, max);
+				w = reset(word, w);
 			} else {
-				rem = rem - w;
-			}
-			while (w > 0) {
-				word[--w] = '\0';
+				/* if word won't fit in rest of line, start on
+				 * a new line
+				 */
+				if (w > rem) {
+					putchar('\n');
+					rem = max;
+				}
+				fputs(word, stdout);
+				if (c == '\n') {
+					rem = max;
+				} else {
+					rem = rem - w;
+				}
+				w = reset(word, w);
 			}
 		}
 	}
-	/* this conditional handles inputs that don't end in \n */
+	/* this prints inputs that don't end in \n. it does NOT add the \n */
 	if (w) {
 		fputs(word, stdout);
 	}
