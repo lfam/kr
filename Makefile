@@ -18,12 +18,11 @@ endif
 
 CC = $(COMPILER)
 
-
 ifndef ex
 	ex = 1.1
 endif
 
-.PHONY: clean
+.PHONY: clean all
 
 all:
 	$(CC) $(CFLAGS) -o $(ex).o $(ex).c
