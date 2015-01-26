@@ -1,9 +1,11 @@
+.PHONY: clean all
+
 debug=1
 GCC_FLAGS = -Wall -std=c89 -DDEBUG -g3
 CLANG_FLAGS = -Wall -std=c89 -DDEBUG -g -O0
 ifeq ($(debug), 0)
-	GCC_FLAGS = -Wall -Wextra -DNDEBUG 
-	CLANG_FLAGS = -Weverything -DNDEBUG
+	GCC_FLAGS = -Wall -std=c89 -DNDEBUG 
+	CLANG_FLAGS = -Wall -std=c89 -DNDEBUG
 endif
 
 GCC = gcc
@@ -22,10 +24,17 @@ ifndef ex
 	ex = 1.1
 endif
 
-.PHONY: clean all
+LIBDIR = lib/
+LIBNAME = kr
+LIBC = $(LIBDIR)reverse.c $(LIBDIR)getline.c
+LIB = $(LIBDIR)libkr.a
+LIBH = $(LIB:a=h)
 
-all:
-	$(CC) $(CFLAGS) -o $(ex).o $(ex).c
+all: $(LIB)
+	$(CC) $(CFLAGS) -o $(ex).o $(ex).c -L$(LIBDIR) -l$(LIBNAME) -I$(LIBDIR)
+
+$(LIB): $(LIBC) $(LIBH)
+	cd $(LIBDIR); make;
 
 clean:
 	rm -f *.o a.out
