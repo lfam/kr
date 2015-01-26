@@ -1,11 +1,29 @@
 #include <stdio.h>
-#include <limits.h>
 #include <stdlib.h>
-#include "../lib/binary_print.h"
+
+#define MAXLINE 1024
+/*
+Exercise 3-6. Write a version of itoa that accepts three arguments
+instead of two. The third argument is a minimum field width; the
+converted number must be padded with blanks on the left if necessary to
+make it wide enough.
+*/
 void itoa(int, char [], unsigned int);
 void reverse(char [], int);
 
-/* itoa:  convert n to characters in s, left padding to width w */
+/* reverse:  reverse string s in place */
+void reverse(char s[], int len)
+{
+	int c, i, j;
+
+	for (i = 0, j = len - 1; i < j; i++, j--) {
+		c = s[i];
+		s[i] = s[j];
+		s[j] = c;
+	}
+}
+
+/* itoa:  convert n to characters in s */
 void
 itoa(int n, char s[], unsigned int w)
 {
@@ -16,37 +34,22 @@ itoa(int n, char s[], unsigned int w)
 	i = 0;
 	do {      /* generate digits in reverse order */
 		s[i++] = abs(n % 10) + '0';  /* get next digit */
-		fprintf(stderr, "%c\n", s[i - 1]);
 	} while (n /= 10);    /* delete it */
 	if (sign < 0)
 		s[i++] = '-';
 	s[i] = '\0';
+	while (i < w)
+		s[i++] = ' ';
 	reverse(s, i);
 }
 	
-void
-reverse(char line[], int len)
-{
-	int i = 0;
-	int j = len - 1;
-
-	while (i <= len - 1) {
-		putchar(line[j]);
-		i++;
-		j--;
-	}
-	putchar('\n');
-}
-
 int
 main(void)
 {
-	char line[1024];
-	fprintf(stderr, PRINTF_BYTE32"\n", BYTE32(127));
-	fprintf(stderr, PRINTF_BYTE32"\n", BYTE32(-128));
-	fprintf(stderr, PRINTF_BYTE32"\n", BYTE32(INT_MIN));
-	itoa(INT_MIN, line, 10);
-	fprintf(stderr, PRINTF_BYTE32"\n", BYTE32((INT_MIN + 1)));
+	int n = 1024;
+	unsigned int width = 10;
+	char out[MAXLINE] = {0};
+	itoa(n, out, width); 
+	printf("%s\n", out);
 	return 0;
 }
-
