@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "lib/libkr.h"
 
 #define MAXLINE 1024
 /*
@@ -9,19 +10,6 @@ converted number must be padded with blanks on the left if necessary to
 make it wide enough.
 */
 void itoa(int, char [], unsigned int);
-void reverse(char [], int);
-
-/* reverse:  reverse string s in place */
-void reverse(char s[], int len)
-{
-	int c, i, j;
-
-	for (i = 0, j = len - 1; i < j; i++, j--) {
-		c = s[i];
-		s[i] = s[j];
-		s[j] = c;
-	}
-}
 
 /* itoa:  convert n to characters in s */
 void
