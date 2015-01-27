@@ -38,3 +38,4 @@ $(LIB): $(LIBC) $(LIBH)
 
 clean:
 	rm -f *.o a.out
+	cd $(LIBDIR); make clean;
