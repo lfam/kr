@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
+#include "lib/libkr.h"
 #define MAXLINE 1024 
 /* 3.3
  * Write a function expand(s1, s2) that expands shorthand notations like a-z in
@@ -101,23 +102,18 @@ int
 main(void)
 {
 	int exit_status = 0;
-	int i, c;
 	char s1[MAXLINE] = {0};
 	char s2[MAXLINE] = {0};
 
-	i = c = 0;
-	while (i < MAXLINE - 1 ) {
-		c = getchar();
-		if (c == '\n') break;
-		if (c == EOF) break;
-		s1[i++] = c;
+	int len = 0;
+	while ((len = getline(s1, MAXLINE)) > 0) {
+		s1[len - 1] = 0;
+		if (! expand(s1, s2)) {
+			exit_status = 1;
+			goto out;
+		}
+		printf("%s\n", s2);
 	}
-	s1[++i] = '\0';
-	if (! expand(s1, s2)) {
-		exit_status = 1;
-		goto out;
-	}
-	printf("%s\n", s2);
 out:
 	return exit_status;
 }
