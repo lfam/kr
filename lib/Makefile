@@ -14,7 +14,7 @@ OBJS = reverse.o getline.o
 LIBKR = libkr
 
 $(LIBKR): $(OBJS)
-	ar rcs $(LIBKR).a $(OBJS) 
+	ar Trcs $(LIBKR).a $(OBJS) 
 
 %.o: %.c $(LIBKR).h
 	$(CC) -c $(CFLAGS) $< -o $@
