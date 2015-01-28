@@ -45,7 +45,7 @@ main(void)
 			if (op2 != 0.0)
 				push((int)pop() % (int)op2);
 			else
-				printf("error: zero divisor\n");
+				printf("warning: modulus of zero\n");
 			break;
 		case '\n':
 			printf("\t%.8g\n", pop());
@@ -93,9 +93,19 @@ getop(char s[])
 	while ((s[0] = c = getch()) == ' ' || c == '\t') ; /* skip blanks */
 
 	s[1] = '\0';
-	if (! isdigit(c) && c != '.')
-		return c;	/* not a number */
+
 	i = 0;
+	if (s[0] == '-' || s[0] == '+') { /* are '-' and '+' signs or operators? */
+		s[++i] = c = getch();
+		if (! isdigit(c) && c != '.') {
+			ungetch(c);
+			return s[0];
+		}
+	}
+
+	if (! isdigit(c) && c != '.') {
+		return c;	/* not a number */
+	}
 	if (isdigit(c))	/* collect integer part of number */
 		while (isdigit(s[++i] = c = getch())) ;
 	if (c == '.')	/* collect fractional part of number */
