@@ -73,8 +73,6 @@ push(double f)
 }
 
 /* pop: pop and return top value from stack */
-char buf[BUFSIZE]; /* buffer for ungetch */
-int bufp = 0; /* next free position in buf */
 double
 pop(void)
 {
@@ -108,13 +106,15 @@ getop(char s[])
 	return NUMBER;
 }
 
+#define BUFSIZE 100 /* buffer for getch() and ungetch() */
+char buf[BUFSIZE]; /* buffer for ungetch */
+int bufp = 0; /* next free position in buf */
 int
 getch(void) /* get a (possibly pushed-back) character */
 {
 	return (bufp > 0) ? buf[--bufp] : getchar();
 }
 
-#define BUFSIZE 100 /* buffer for getch() and ungetch() */
 void
 ungetch(int c) /* push character back on input */
 {
