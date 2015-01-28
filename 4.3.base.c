@@ -3,8 +3,6 @@
 #include <ctype.h> /* for isdigit() */
 #define MAXOP 100 /* max size of operand or operator */
 #define NUMBER '0' /* signal that a number was found */
-#define MAXVAL 100 /* max depth of val stack */
-#define BUFSIZE 100 /* buffer for getch() and ungetch() */
 
 /* function prototypes */
 int getop(char []);
@@ -12,12 +10,6 @@ void push(double);
 double pop(void);
 int getch(void);
 void ungetch(int);
-
-/* global variables */
-int sp = 0; /* next free stack position */
-double val[MAXVAL]; /* value stack */
-char buf[BUFSIZE]; /* buffer for ungetch */
-int bufp = 0; /* next free position in buf */
 
 /* reverse polish calculator */
 int
@@ -60,7 +52,12 @@ main(void)
 }
 
 /* push: push f onto vlaue stack */
-void push(double f)
+#define MAXVAL 100 /* max depth of val stack */
+int sp = 0; /* next free stack position */
+double val[MAXVAL]; /* value stack */
+
+void
+push(double f)
 {
 	if (sp < MAXVAL)
 		val[sp++] = f;
@@ -69,7 +66,10 @@ void push(double f)
 }
 
 /* pop: pop and return top value from stack */
-double pop(void)
+char buf[BUFSIZE]; /* buffer for ungetch */
+int bufp = 0; /* next free position in buf */
+double
+pop(void)
 {
 	if (sp > 0)
 		return val[--sp];
@@ -80,7 +80,8 @@ double pop(void)
 }
 
 /* getop: get next character or numeric operand */
-int getop(char s[])
+int
+getop(char s[])
 {
 	int i, c;
 	while ((s[0] = c = getch()) == ' ' || c == '\t') ; /* skip blanks */
@@ -99,12 +100,15 @@ int getop(char s[])
 	return NUMBER;
 }
 
-int getch(void) /* get a (possibly pushed-back) character */
+int
+getch(void) /* get a (possibly pushed-back) character */
 {
 	return (bufp > 0) ? buf[--bufp] : getchar();
 }
 
-void ungetch(int c) /* push character back on input */
+#define BUFSIZE 100 /* buffer for getch() and ungetch() */
+void
+ungetch(int c) /* push character back on input */
 {
 	if (bufp >= BUFSIZE)
 		printf("ungetch: too many characters. buffer full\n");
