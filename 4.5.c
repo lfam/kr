@@ -5,8 +5,10 @@
 #include <stdlib.h> /* for atof() */
 #include <ctype.h> /* for isdigit() */
 #include <math.h>
+#include <string.h>
 #define MAXOP 100 /* max size of operand or operator */
 #define NUMBER '0' /* signal that a number was found */
+#define STR 1 /* signal that a string was read */
 
 /* function prototypes */
 int getop(char []);
@@ -18,6 +20,7 @@ void duplicate_top(void);
 void swap(void);
 void print_top(void);
 void clear_stack(void);
+void name(char []);
 
 /* reverse polish calculator */
 int
@@ -27,7 +30,11 @@ main(void)
 	double op2;
 	char s[MAXOP];
 	while ((type = getop(s)) != EOF) {
+		fprintf(stderr, "input to switch: %d\n", type);
 		switch (type) {
+		case STR:
+			name(s);
+			break;
 		case NUMBER:
 			push(atof(s));
 			break;
@@ -71,12 +78,28 @@ main(void)
 			printf("\t%.8g\n", pop());
 			break;
 		default:
-			fprintf(stderr, "error: unknown command %s\n", s);
+			fprintf(stderr, "error: unknown command: %s\n", s);
 			break;
 		}
 	}
 	return 0;
 }
+
+void
+name(char s[])
+{
+	if (strcmp(s, "pow") == 0) {
+		double op = pop();
+		push(pow(pop(), op));
+	} else if (strcmp(s, "sin") == 0) {
+		push(sin(pop()));
+	} else if (strcmp(s, "exp") == 0) {
+		push(exp(pop()));
+	} else {
+		fprintf(stderr, "invalid name: %s\n", s);
+	}
+}
+
 #define MAXVAL 100 /* max depth of val stack */
 int sp = 0; /* next free stack position */
 double val[MAXVAL]; /* value stack */
@@ -147,12 +170,15 @@ int
 getop(char s[])
 {
 	int i, c;
-	while ((s[0] = c = getch()) == ' ' || c == '\t') ; /* skip blanks */
+	while ((s[0] = c = getch()) == ' ' || c == '\t') { ; /* skip blanks */
+		fprintf(stderr, "processing blanks\n");
+	}
 
 	s[1] = '\0';
 
 	i = 0;
 	if (s[0] == '-' || s[0] == '+') { /* are '-' and '+' signs or operators? */
+		fprintf(stderr, "checking + and -\n");
 		s[++i] = c = getch();
 		if (! isdigit(c) && c != '.') {
 			ungetch(c);
@@ -160,9 +186,21 @@ getop(char s[])
 		}
 	}
 
+
+	if (isalpha(c)) {
+		fprintf(stderr, "isalpha-ing\n");
+		i = 0;
+		while ((c = isalpha(s[i++])))
+			s[i] = c = getch();
+		s[i - 1] = '\0';
+		if (c != EOF && c != 0)
+			ungetch(c);
+		return STR;
+	}
 	if (! isdigit(c) && c != '.') {
 		return c;	/* not a number */
 	}
+	fprintf(stderr, "gathering number\n");
 	if (isdigit(c))	/* collect integer part of number */
 		while (isdigit(s[++i] = c = getch())) ;
 	if (c == '.')	/* collect fractional part of number */
