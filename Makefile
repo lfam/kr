@@ -31,7 +31,7 @@ LIB = $(LIBDIR)libkr.a
 LIBH = $(LIB:a=h)
 
 all: $(LIB)
-	$(CC) $(CFLAGS) -o $(ex).o $(ex).c -L$(LIBDIR) -l$(LIBNAME) -I$(LIBDIR)
+	$(CC) $(CFLAGS) -o $(ex).o $(ex).c -L$(LIBDIR) -l$(LIBNAME) -I$(LIBDIR) -lm
 
 $(LIB): $(LIBC) $(LIBH)
 	cd $(LIBDIR); make;
