@@ -30,7 +30,6 @@ main(void)
 	double op2;
 	char s[MAXOP];
 	while ((type = getop(s)) != EOF) {
-		fprintf(stderr, "input to switch: %d\n", type);
 		switch (type) {
 		case STR:
 			name(s);
@@ -171,14 +170,12 @@ getop(char s[])
 {
 	int i, c;
 	while ((s[0] = c = getch()) == ' ' || c == '\t') { ; /* skip blanks */
-		fprintf(stderr, "processing blanks\n");
 	}
 
 	s[1] = '\0';
 
 	i = 0;
 	if (s[0] == '-' || s[0] == '+') { /* are '-' and '+' signs or operators? */
-		fprintf(stderr, "checking + and -\n");
 		s[++i] = c = getch();
 		if (! isdigit(c) && c != '.') {
 			ungetch(c);
@@ -188,7 +185,6 @@ getop(char s[])
 
 
 	if (isalpha(c)) {
-		fprintf(stderr, "isalpha-ing\n");
 		i = 0;
 		while ((c = isalpha(s[i++])))
 			s[i] = c = getch();
@@ -200,7 +196,6 @@ getop(char s[])
 	if (! isdigit(c) && c != '.') {
 		return c;	/* not a number */
 	}
-	fprintf(stderr, "gathering number\n");
 	if (isdigit(c))	/* collect integer part of number */
 		while (isdigit(s[++i] = c = getch())) ;
 	if (c == '.')	/* collect fractional part of number */
