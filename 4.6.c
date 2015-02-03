@@ -7,7 +7,7 @@
 #include <ctype.h> /* for isdigit() */
 #include <math.h>
 #include <string.h>
-#define MAXOP 100 /* max size of operand or operator */
+#define MAXOP 100 /* max size in bytes (char) of operand or operator */
 #define NUMBER '0' /* signal that a number was found */
 #define STR 1 /* signal that a string was read */
 #define VAR 2 /* signal that a variable was read */
@@ -26,7 +26,7 @@ void clear_stack(void);
 void name(char []);
 
 void save(double, int); /* saves a float in a variable named by char */
-double saves[25] = {0.0};
+double slots[25] = {0.0};
 const char idx[256] = 
 	{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -56,7 +56,7 @@ main(void)
 	double op2;
 	char s[MAXOP];
 	while ((type = getop(s)) != EOF) {
-		fprintf(stderr, "--> %d\n", type);
+//		fprintf(stderr, "--> %d\n", type);
 		switch (type) {
 		case STR:
 			name(s);
@@ -71,11 +71,11 @@ main(void)
 			 * the value 123, and can never do operations with it.
 			 */
 			int var = s[0];
-			memmove(&s[0], &s[1], sizeof(s) - sizeof(char));
-			if (s[0] == ' ') {
-				push(saves[(int)idx[var]]);
-				fprintf(stderr, "pushed\n");
-			} else if ((type = getop(s)) == NUMBER) {
+//			memmove(&s[0], &s[1], sizeof(s) - sizeof(char));
+			fprintf(stderr, "s[1] is %d\n", s[1]);
+			if (s[1] == ' ') { /* recall value from var */
+				push(slots[(int)idx[var]]);
+			} else if ((type = getop(s)) == NUMBER) { /* save value to var */
 				save(atof(s), var);
 			}
 			break;
@@ -134,8 +134,8 @@ main(void)
 void
 save(double x, int c)
 {
-	saves[(int)idx[c]] = x;
-	fprintf(stderr, "saved %g in %c\n", saves[(int)idx[c]], c);
+	slots[(int)idx[c]] = x;
+	fprintf(stderr, "saved %g in %c\n", slots[(int)idx[c]], c);
 }
 
 void
@@ -195,10 +195,12 @@ swap(void)
 void
 push(double f)
 {
-	if (sp < MAXVAL)
+	if (sp < MAXVAL) {
 		val[sp++] = f;
-	else
+		fprintf(stderr, "pushed %g\n", f);
+	} else {
 		fprintf(stderr, "error: stack full, can't push %g\n", f);
+	}
 }
 
 /* pop: pop and return top value from stack */
@@ -219,6 +221,7 @@ int sign;
 int
 getop(char s[])
 {
+	fprintf(stderr, "into getop()\n");
 	int i, c;
 	while ((s[0] = c = getch()) == ' ' || c == '\t') { ; /* skip blanks */
 	}
@@ -235,11 +238,13 @@ getop(char s[])
 	}
 
 	if (c == '^') { /* trying to work with a user variable? */
-		s[i] = c = getch();
+		s[i] = c = getchar();
 		if (isalpha(s[i])) {
 			s[++i] = '\0';
 			return VAR;
 		} else if (c != EOF && c != 0) {
+			fprintf(stderr, "ya done goofed\n");
+			exit(1);
 			ungetch(c);
 		}
 	}
