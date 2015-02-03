@@ -70,6 +70,7 @@ main(void)
 			 * respect the whitespace after '^a 123', so you always save
 			 * the value 123, and can never do operations with it.
 			 */
+		if(0) { // don't do this logic here, do it in getops
 			int var = s[0];
 //			memmove(&s[0], &s[1], sizeof(s) - sizeof(char));
 			fprintf(stderr, "s[1] is %d\n", s[1]);
@@ -78,6 +79,7 @@ main(void)
 			} else if ((type = getop(s)) == NUMBER) { /* save value to var */
 				save(atof(s), var);
 			}
+		}
 			break;
 		case PRINT:
 			;
@@ -237,7 +239,11 @@ getop(char s[])
 		}
 	}
 
-	if (c == '^') { /* trying to work with a user variable? */
+	if (c == '^') { /* trying to work with a user variable? 
+			   after getting variable name, check if getchar == ' '
+			   if true, return RECALL
+			   else if value, return SAVE and put value in s
+			 */
 		s[i] = c = getchar();
 		if (isalpha(s[i])) {
 			s[++i] = '\0';
