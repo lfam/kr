@@ -10,7 +10,8 @@
 #define MAXOP 100 /* max size in bytes (char) of operand or operator */
 #define NUMBER '0' /* signal that a number was found */
 #define STR 1 /* signal that a string was read */
-#define VAR 2 /* signal that a variable was read */
+#define SAVE 2 /* signal save a value */
+#define RECALL 4 /* signal to push a saved value onto the stack */
 #define PRINT 3 /* print whole stack */
 
 /* function prototypes */
@@ -56,7 +57,6 @@ main(void)
 	double op2;
 	char s[MAXOP];
 	while ((type = getop(s)) != EOF) {
-//		fprintf(stderr, "--> %d\n", type);
 		switch (type) {
 		case STR:
 			name(s);
@@ -64,22 +64,14 @@ main(void)
 		case NUMBER:
 			push(atof(s));
 			break;
-		case VAR:
+		case SAVE: /* save a value into a variable named with [a-z] */
 			;
-			/* this doesn't work right because getops doesn't 
-			 * respect the whitespace after '^a 123', so you always save
-			 * the value 123, and can never do operations with it.
-			 */
-		if(0) { // don't do this logic here, do it in getops
 			int var = s[0];
-//			memmove(&s[0], &s[1], sizeof(s) - sizeof(char));
-			fprintf(stderr, "s[1] is %d\n", s[1]);
-			if (s[1] == ' ') { /* recall value from var */
-				push(slots[(int)idx[var]]);
-			} else if ((type = getop(s)) == NUMBER) { /* save value to var */
-				save(atof(s), var);
-			}
-		}
+			memmove(&s[0], &s[1], sizeof(s) - sizeof(char));
+			save(atof(s), var);
+			break;
+		case RECALL: /* recall a saved variable */
+			push(slots[(int)idx[(int)s[0]]]);
 			break;
 		case PRINT:
 			;
@@ -199,7 +191,6 @@ push(double f)
 {
 	if (sp < MAXVAL) {
 		val[sp++] = f;
-		fprintf(stderr, "pushed %g\n", f);
 	} else {
 		fprintf(stderr, "error: stack full, can't push %g\n", f);
 	}
@@ -223,7 +214,6 @@ int sign;
 int
 getop(char s[])
 {
-	fprintf(stderr, "into getop()\n");
 	int i, c;
 	while ((s[0] = c = getch()) == ' ' || c == '\t') { ; /* skip blanks */
 	}
@@ -244,14 +234,24 @@ getop(char s[])
 			   if true, return RECALL
 			   else if value, return SAVE and put value in s
 			 */
-		s[i] = c = getchar();
-		if (isalpha(s[i])) {
+		int var = 0;
+		s[i] = c = getch();
+		if (isalpha(c)) { /* got var name, proceed */
+			var = c;
 			s[++i] = '\0';
-			return VAR;
-		} else if (c != EOF && c != 0) {
-			fprintf(stderr, "ya done goofed\n");
-			exit(1);
-			ungetch(c);
+			if ((s[i] = c = getch()) == ' ') { /* RECALL */
+				return RECALL;
+			} else if (isdigit(c) || c == '.') { /* SAVE */
+				/* collect integer part of number */
+					while (isdigit(s[++i] = c = getch())) ;
+				if (c == '.')	/* collect fractional part of number */
+					while (isdigit(s[++i] = c = getch())) ;
+				s[i] = '\0';
+				return SAVE;
+			} else if (c != EOF && c != 0) {
+				fprintf(stderr, "ya done goofed\n");
+				ungetch(c);
+			}
 		}
 	}
 
