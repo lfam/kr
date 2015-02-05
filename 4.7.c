@@ -235,10 +235,8 @@ getop(char s[])
 			   if true, return RECALL
 			   else if value, return SAVE and put value in s
 			 */
-		int var = 0;
 		s[i] = c = getch();
 		if (isalpha(c)) { /* got var name, proceed */
-			var = c;
 			s[++i] = '\0';
 			if ((s[i] = c = getch()) == ' ') { /* RECALL */
 				return RECALL;
@@ -300,10 +298,10 @@ ungetch(int c) /* push character back on input */
 }
 
 void
-ungets(char s[]){
+ungets(char s[]) {
 	int i, c;
 	i = 0;
 	while (((c = s[i]) != '\0') && c != EOF) {
-		ungetch(c)
+		ungetch(c);
 	}
 }
