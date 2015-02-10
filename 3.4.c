@@ -49,4 +49,3 @@ main(void)
 	fprintf(stderr, PRINTF_BYTE32"\n", BYTE32((INT_MIN + 1)));
 	return 0;
 }
-
