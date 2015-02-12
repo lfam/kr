@@ -1,10 +1,8 @@
 #include <stdio.h>
-#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../lib/binary_print.h"
-/* itoa:  convert n to characters in s */
-void itoa(int, char []);
+
+void recur_itoa(int, char *);
 void reverse(char *, int, int);
 
 void
@@ -19,28 +17,32 @@ reverse(char *s, int i, int j)
 }
 
 void
-itoa(int n, char s[])
+recur_itoa(int n, char *s)
 {
-	int i, sign;
-
-	if ((sign = n) < 0)  /* record sign */
-		n = -n;          /* make n positive */
-	i = 0;
-	do {      /* generate digits in reverse order */
-		s[i++] = abs(n % 10) + '0';  /* get next digit */
-		fprintf(stderr, "%c\n", s[i - 1]);
-	} while (n /= 10);    /* delete it */
-	if (sign < 0)
-		s[i++] = '-';
-	s[i] = '\0';
+	if (n / 10) {
+		recur_itoa(n / 10, s + 1);
+	}
+	*s = (n % 10 + '0');
 }
 	
 int
 main(void)
 {
-	char line[1024];
-	int d = 4567;
-	itoa(d, line);
-	printf("%s\n", line);
+	int d = -3567;
+
+	char *line = calloc(1024, sizeof(char));
+	char *s = line;
+
+	if (d < 0) {
+		*s++ = '-';
+		d = -d;
+	}
+	char *rev = s;
+
+	recur_itoa(d, s);
+	reverse(rev, 0, strlen(rev) - 1);
+
+	printf("line %s\n", line);
+
 	return 0;
 }
