@@ -43,6 +43,7 @@ main(void)
 	reverse(rev, 0, strlen(rev) - 1);
 
 	printf("line %s\n", line);
+	free(line);
 
 	return 0;
 }
