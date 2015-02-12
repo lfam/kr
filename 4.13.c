@@ -8,7 +8,7 @@ void reverse(char *, int, int);
 void
 reverse(char *s, int i, int j)
 {
-	if (i <= j) {
+	if (i < j) {
 		int buf = s[i];
 		s[i] = s[j];
 		s[j] = buf;
