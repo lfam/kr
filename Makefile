@@ -20,9 +20,7 @@ endif
 
 CC = $(COMPILER)
 
-ifndef ex
-	ex = 1.1
-endif
+ex ?= 1.1
 
 LIBDIR = lib/
 LIBNAME = kr
