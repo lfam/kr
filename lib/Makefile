@@ -10,7 +10,7 @@ CC = $(COMPILER)
 
 CFLAGS = -Wall -std=c89
 
-OBJS = reverse.o getline.o
+OBJS = reverse.o getline.o getch.o
 LIBKR = libkr
 
 $(LIBKR): $(OBJS)
