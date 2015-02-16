@@ -49,17 +49,9 @@ strncpy(char *dest, const char *src, size_t n)
 int
 strncmp(const char *s1, const char *s2, size_t n)
 {
-	size_t i, j, x;
-	i = j = x = 0;
-
-	for (x = 0; x < n && (s1[i] == s2[j]) && s1[i] && s2[j]; ++i, ++j, ++x)
+	for (; n-- && (*s1 == *s2) && *s1 && *s2; ++s1, ++s2)
 		;
-	for (; i < n && s1[i]; ++i)
-		;
-	for (; i < n && s2[j]; ++j)
-		;
-
-	return (int)(i - j);
+	return (*s1 - *s2);
 }
 
 int
@@ -79,9 +71,9 @@ main(void)
 	printf("%s\n", strncpy(s3, s4, 0));
 
 
-	char s5[] = "";
-	char s6[] = "111";
+	char s5[] = "aab";
+	char s6[] = "aa";
 	printf("strncmp:\n");
-	printf("%d\n", strncmp(s5, s6, 3));
+	printf("%d\n", strncmp(s5, s6, 4));
 	return 0;
 }
