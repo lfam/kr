@@ -2,23 +2,34 @@
  * accept the option -n, where n is the number of tailing lines to output
  */
 
+/* assumptions:
+ * the program assumes that it won't run when n is 0
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "lib/libkr.h"
+#include <assert.h>
+
 #define BUFFER 1024 /* how big can this go? */
 
-void shift(char **, char **, int);
 char *dupe(const char *);
+int getline(char *, int);
 
-/* shift a pointer array by n */
-void
-shift(char **p, char **end, int n)
+int
+getline(char *s, int max)
 {
-	if (*p == *end)
-		return;
-	*p = *(p + n);
-	shift(p + n, end, n);
+	int i, c;
+	char *p = s;
+	for (i = 0; i < max - 1 && (c = getchar()) !=
+		EOF && c != '\n' && c != 0; ++i) {
+		*s++ = c;
+	}
+	if (c == '\n') {
+		*s++ = '\n';
+	}
+		*s = '\0';
+	return s - p;
 }
 
 /* duplicate a string */
@@ -47,43 +58,41 @@ main(int argc, char **argv)
 	int n = 10;
 	if (argc == 2 && *argv[1] == '-') {
 		n = atoi(argv[1]);
-		n = n > 0 ? n : -n;
+		n = n > 0 ? n : -n; /* shouldn't be necessary if atoi() works*/
 	}
 	if (n == 0) /* skip unnecessary memory allocations */
 		return 0;
 
-	char **lineptrs = malloc(sizeof(char *) * n);
-	char **p = lineptrs;
-	*p = NULL;
+	char **ring = malloc(sizeof(char *) * n);
+	char **p = ring;
 
-	for (i = 0; i < n; ++i, ++p) /* initialize storage */
+	/* intialize storage */
+	for (i = 0; i < n; ++i, ++p)
 		*p = NULL;
-	p = lineptrs;
+	p = ring;
 
-	for (i = 0; i < n; ++i, ++p) /* fill the array */
-		if (getline(line, BUFFER) > 0)
-			*p = dupe(line);
-		else
-			break;
-	p = lineptrs;
-
-	while (n && getline(line, BUFFER) > 0) { /* cycle the array */
-		if (lineptrs[0] != NULL) {
-			free(lineptrs[0]);
-			lineptrs[0] = NULL;
-		}
-		shift(lineptrs, &lineptrs[n - 1], 1);
-		lineptrs[n - 1] = dupe(line);
+	/* write lines into ring buffer */
+	for (; (getline(line, BUFFER) > 0); ++p) {
+		p = (p == &ring[n]) ? ring : p;
+		if (*p != NULL)
+			free(*p);
+		*p = dupe(line);
 	}
-	p = lineptrs;
 
-	for (i = 0; i < n && *p != NULL; ++i, ++p)
-		fputs(*p, stdout);
+	/* print lines from ring buffer */
+	for (i = 0, p = (p == &ring[n]) ? ring : p;
+	     i < n;
+	     ++i, ++p) {
+		p = (p == &ring[n]) ? ring : p;
+		if (*p != NULL)
+			fputs(*p, stdout);
+	}
 
+	/* free lines */
 	for (i = 0; i < n; ++i)
-		if (lineptrs[i] != NULL)
-			free(lineptrs[i]);
-	free(lineptrs);
+		if (ring[i] != NULL)
+			free(ring[i]);
+	free(ring);
 
 	return 0;
 }
