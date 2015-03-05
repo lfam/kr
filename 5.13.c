@@ -8,11 +8,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define BUFFER 1024 /* how big can this go? */
 
-char *dupe(const char *);
+char *dupe(const char *, int);
 int getline(char *, int);
 
 int
@@ -33,12 +32,12 @@ getline(char *s, int max)
 
 /* duplicate a string */
 char *
-dupe(const char *s)
+dupe(const char *s, int len)
 {
 	if (s == NULL)
 		return NULL;
 
-	char *dupe = malloc(strlen(s) + 1);
+	char *dupe = malloc(len + 1);
 	if (dupe == NULL)
 		return NULL;
 
@@ -64,25 +63,27 @@ main(int argc, char **argv)
 
 	char **ring = malloc(sizeof(char *) * n);
 	char **p = ring;
+	char **end = &ring[n];
 
 	/* intialize storage */
-	for (i = 0; i < n; ++i, ++p)
-		*p = NULL;
+	while (p != end) {
+		*(p)++ = NULL;
+	}
 	p = ring;
 
 	/* write lines into ring buffer */
-	for (; (getline(line, BUFFER) > 0); ++p) {
-		p = (p == &ring[n]) ? ring : p;
+	int len = 0;
+	while ((len = getline(line, BUFFER)) > 0) {
 		if (*p != NULL)
 			free(*p);
-		*p = dupe(line);
+		*p = dupe(line, len);
+		p = (p + 1 == end) ? ring : p + 1;
 	}
 
 	/* print lines from ring buffer */
-	for (i = 0, p = (p == &ring[n]) ? ring : p;
+	for (i = 0;
 	     i < n;
-	     ++i, ++p) {
-		p = (p == &ring[n]) ? ring : p;
+	     ++i, p = (p + 1 == end) ? ring : p + 1) {
 		if (*p != NULL)
 			fputs(*p, stdout);
 	}
