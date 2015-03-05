@@ -8,27 +8,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "lib/libkr.h"
 
 #define BUFFER 1024 /* how big can this go? */
 
 char *dupe(const char *, int);
-int getline(char *, int);
-
-int
-getline(char *s, int max)
-{
-	int i, c;
-	char *p = s;
-	for (i = 0; i < max - 1 && (c = getchar()) !=
-		EOF && c != '\n' && c != 0; ++i) {
-		*s++ = c;
-	}
-	if (c == '\n') {
-		*s++ = '\n';
-	}
-		*s = '\0';
-	return s - p;
-}
 
 /* duplicate a string */
 char *
@@ -56,9 +40,9 @@ main(int argc, char **argv)
 	int n = 10;
 	if (argc == 2 && *argv[1] == '-') {
 		n = atoi(argv[1]);
-		n = n > 0 ? n : -n; /* shouldn't be necessary if atoi() works*/
+		n = -n;
 	}
-	if (n == 0) /* skip unnecessary memory allocations */
+	if (n == 0) /* nothing to do */
 		return 0;
 
 	char **ring = malloc(sizeof(char *) * n);
@@ -66,33 +50,32 @@ main(int argc, char **argv)
 	char **end = &ring[n];
 
 	/* intialize storage */
-	while (p != end) {
+	while (p != end)
 		*(p)++ = NULL;
-	}
 	p = ring;
 
 	/* write lines into ring buffer */
 	int len = 0;
-	while ((len = getline(line, BUFFER)) > 0) {
+	for (;
+	     (len = getline(line, BUFFER)) > 0;
+	     (p + 1 == end) ? p = ring : ++p) {
 		if (*p != NULL)
 			free(*p);
 		*p = dupe(line, len);
-		p = (p + 1 == end) ? ring : p + 1;
 	}
-
 	/* print lines from ring buffer */
-	for (i = 0;
-	     i < n;
-	     ++i, p = (p + 1 == end) ? ring : p + 1) {
+/* this needs i for when n == 1 ? 
+ * when n == 1, start == end... no! end is past the end of the array!
+ */
+	for (i = 0; i < n; ++i, (p + 1 == end) ? p = ring : ++p)
 		if (*p != NULL)
 			fputs(*p, stdout);
-	}
 
 	/* free lines */
-	for (i = 0; i < n; ++i)
-		if (ring[i] != NULL)
-			free(ring[i]);
-	free(ring);
+	while (ring != end)
+		if (*ring != NULL)
+			free(*(ring)++);
+	free(ring - n);
 
 	return 0;
 }
