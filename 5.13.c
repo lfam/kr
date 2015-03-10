@@ -14,7 +14,7 @@
 
 char *dupe(const char *, int);
 
-/* duplicate a string */
+/* duplicate a stringbuf */
 char *
 dupe(const char *s, int len)
 {
@@ -35,47 +35,46 @@ int
 main(int argc, char **argv)
 {
 	char line[BUFFER];
-	int i = 0;
 
 	int n = 10;
-	if (argc == 2 && *argv[1] == '-') {
-		n = atoi(argv[1]);
-		n = -n;
-	}
-	if (n == 0) /* nothing to do */
+	if (argc == 2 && *argv[1] == '-')
+		n = -(atoi(argv[1]));
+	if (n < 1) /* nothing to do */
 		return 0;
 
-	char **ring = malloc(sizeof(char *) * n);
-	char **p = ring;
-	char **end = &ring[n];
+	char **ringbuf = malloc(sizeof(char *) * n);
+	if (ringbuf == NULL) {
+		fputs("ERROR: out of memory\n", stderr);
+		return 1;
+	}
+	char **p = ringbuf;
+	char **end = &ringbuf[n];
 
 	/* intialize storage */
 	while (p != end)
 		*(p)++ = NULL;
-	p = ring;
+	p = ringbuf;
 
 	/* write lines into ring buffer */
 	int len = 0;
-	for (;
-	     (len = getline(line, BUFFER)) > 0;
-	     (p + 1 == end) ? p = ring : ++p) {
-		if (*p != NULL)
-			free(*p);
+	while ((len = getline(line, BUFFER)) > 0) {
+		free(*p);
 		*p = dupe(line, len);
+		(p + 1 == end) ? p = ringbuf : ++p;
 	}
-	/* print lines from ring buffer */
-/* this needs i for when n == 1 ? 
- * when n == 1, start == end... no! end is past the end of the array!
- */
-	for (i = 0; i < n; ++i, (p + 1 == end) ? p = ring : ++p)
+
+	/* print lines from ringbuf buffer */
+	while (n--) {
 		if (*p != NULL)
 			fputs(*p, stdout);
+		(p + 1 == end) ? p = ringbuf : ++p;
+	}
+	p = ringbuf;
 
 	/* free lines */
-	while (ring != end)
-		if (*ring != NULL)
-			free(*(ring)++);
-	free(ring - n);
+	while (p != end)
+		free(*(p)++);
+	free(ringbuf);
 
 	return 0;
 }
